@@ -62,8 +62,10 @@ app.use('/',
   },
   proxy('https://na1.api.riotgames.com', {
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+      console.log('userReq', userReq);
+      console.log('userRes', userRes);
       console.log('useRes', proxyResData.toString('utf8'));
-      return userRes;
+      return proxyRes;
     }
   })
 );
