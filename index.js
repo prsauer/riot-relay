@@ -19,6 +19,7 @@ if (REDIS_URL) {
 }
 
 function cacheWrite(req, res, next) {
+  console.log('CacehWrite.Entry');
   if (redisCache) {
     console.log("WRITING", req.originalUrl, req.body);
     redisCache.add(req.originalUrl, req.body, {
