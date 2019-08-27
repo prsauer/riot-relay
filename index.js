@@ -15,7 +15,7 @@ var redisClient;
 var REDIS_URL = process.env.REDIS_URL;
 
 if (REDIS_URL) {
-  ({ client: redis.createClient(REDIS_URL) })
+  redisClient = redis({ client: redis.createClient(REDIS_URL) });
 }
 
 function cacheWrite(req, res, next) {
