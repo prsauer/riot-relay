@@ -26,7 +26,13 @@ $ git push heroku master
 $ Add RIOT_API_KEY as an config var with your Riot API key as the value 
 $ heroku open
 ```
-or
+
+## Optional: Add Redis Cache
+
+You should simply need to provision the cache on Heroku and as long as the connection string is loaded to REDIS_URL on the Heroku config vars you are good to go.
+```
+$ Provision Redis cache on Heroku
+```
 
 ## More information
 
