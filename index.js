@@ -62,9 +62,15 @@ app.use('/',
   },
   proxy('https://na1.api.riotgames.com', {
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-      console.log('userReq', userReq);
-      console.log('userRes', userRes);
+      console.log('userReq', userReq.originalUrl);
+      console.log('userRes', userRes.originalUrl);
       console.log('useRes', proxyResData.toString('utf8'));
+      redisCache.add(userReq.originalUrl, proxyResData.toString('utf8'), {
+          type: proxyRes.headers['content-type'],
+          status: proxyRes.statusCode,
+        },
+        function (error, added) { console.log("ADDED", added); }
+      );
       return proxyRes;
     }
   })
