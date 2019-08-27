@@ -12,7 +12,7 @@ const RIOT_API_KEY = process.env.RIOT_API_KEY;
 var app = express();
 var redisClient;
 
-var REDIS_URL = "process.env.REDIS_URL";
+var REDIS_URL = process.env.REDIS_URL;
 
 if (REDIS_URL) {
   ({ client: redis.createClient(REDIS_URL) })
