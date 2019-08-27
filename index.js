@@ -25,6 +25,7 @@ function cacheWrite(req, res, next) {
         type: res.headers['content-type'],
         status: res.statusCode,
       },
+      function (error, added) { console.log("ADDED", added); }
     );
   }
   next();
