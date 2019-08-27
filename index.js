@@ -12,8 +12,7 @@ const RIOT_API_KEY = process.env.RIOT_API_KEY;
 var app = express();
 var redisClient;
 
-// process.env.REDIS_URL
-var REDIS_URL = "redis://h:pce6fb632bcd59e5435ce9b242fabe0162387173bd09544afcdcdd495bc43a6fb@ec2-18-205-197-149.compute-1.amazonaws.com:32639";
+var REDIS_URL = "process.env.REDIS_URL";
 
 if (REDIS_URL) {
   ({ client: redis.createClient(REDIS_URL) })
@@ -21,6 +20,7 @@ if (REDIS_URL) {
 
 function cacheWrite(req, res, next) {
   if (redisClient) {
+    console.log("WRITING", req.originalUrl, req.body);
     redisClient.add(req.originalUrl, req.body, {
         type: res.headers['content-type'],
         status: res.statusCode,
@@ -40,11 +40,12 @@ app.use('/',
       res.send( 200 );
     } else {
       if (redisClient) {
+        console.log("PEEKING FOR", req.originalUrl);
         var cached = redisClient.get(req.originalUrl);
-        if ( cache.length &&  cache[0].body != null ) {
-          res.contentType(cache[0].type);
-          res.status(cache[0].status);
-          res.send(cache[0].body);
+        if ( cached.length &&  cached[0].body != null ) {
+          res.contentType(cached[0].type);
+          res.status(cached[0].status);
+          res.send(cached[0].body);
         } else {
           // Cache Client but no entry
           next();
