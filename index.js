@@ -18,7 +18,7 @@ if (process.env.REDIS_URL) {
   });
 }
 
-app.use(redisClient ? cache.route() : (r,s,n) =>n(), function(req, res, next) {
+app.use(redisClient ? redisClient.route() : (r,s,n) =>n(), function(req, res, next) {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
   res.header("Access-Control-Allow-Headers", "X-Riot-Token, Origin, X-Requested-With, Content-Type, Accept");
   req.headers["X-Riot-Token"] = RIOT_API_KEY;
