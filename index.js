@@ -42,15 +42,17 @@ app.use('/',
     } else {
       if (redisCache) {
         console.log("PEEKING FOR", req.originalUrl);
-        var cached = redisCache.get(req.originalUrl);
-        if ( cached.length &&  cached[0].body != null ) {
-          res.contentType(cached[0].type);
-          res.status(cached[0].status);
-          res.send(cached[0].body);
-        } else {
-          // Cache Client but no entry
-          next();
-        }
+        var cached = redisCache.get(req.originalUrl, function (error, entries) {
+          console.log("CACHE.GET.ENTRIES", entries);
+          if ( cached.length &&  cached[0].body != null ) {
+            res.contentType(cached[0].type);
+            res.status(cached[0].status);
+            res.send(cached[0].body);
+          } else {
+            // Cache Client but no entry
+            next();
+          }
+        });
       } else {
         // No Cache Client
         next();
