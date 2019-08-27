@@ -10,18 +10,18 @@ const PORT = process.env.PORT || 5000
 const RIOT_API_KEY = process.env.RIOT_API_KEY;
 
 var app = express();
-var redisClient;
+var redisCache;
 
 var REDIS_URL = process.env.REDIS_URL;
 
 if (REDIS_URL) {
-  redisClient = redis({ client: redis.createClient(REDIS_URL) });
+  redisCache = cache({ client: redis.createClient(REDIS_URL) });
 }
 
 function cacheWrite(req, res, next) {
-  if (redisClient) {
+  if (redisCache) {
     console.log("WRITING", req.originalUrl, req.body);
-    redisClient.add(req.originalUrl, req.body, {
+    redisCache.add(req.originalUrl, req.body, {
         type: res.headers['content-type'],
         status: res.statusCode,
       },
@@ -39,9 +39,9 @@ app.use('/',
       res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
       res.send( 200 );
     } else {
-      if (redisClient) {
+      if (redisCache) {
         console.log("PEEKING FOR", req.originalUrl);
-        var cached = redisClient.get(req.originalUrl);
+        var cached = redisCache.get(req.originalUrl);
         if ( cached.length &&  cached[0].body != null ) {
           res.contentType(cached[0].type);
           res.status(cached[0].status);
