@@ -2,6 +2,7 @@ var proxy = require('express-http-proxy');
 
 // Optional: Connect to a redis server to cache requests
 var cache = require('express-redis-cache');
+var redis = require('redis');
 
 const express = require('express');
 const path = require('path')
@@ -12,10 +13,7 @@ var app = express();
 var redisClient;
 
 if (process.env.REDIS_URL) {
-  redisClient = cache({
-    host: process.env.REDIS_URL,
-    port: 32639,
-  });
+  ({ client: redis.createClient(process.env.REDIS_URL) })
 }
 
 app.use(redisClient ? redisClient.route() : (r,s,n) =>n(), function(req, res, next) {
