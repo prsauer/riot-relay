@@ -47,7 +47,7 @@ app.use('/',
           console.log("CACHE.GET.ENTRIES", entries);
           if ( entries.length &&  entries[0].body != null ) {
             res.contentType(entries[0].type);
-            res.status(entries[0].status);
+            res.status(200);
             res.send(entries[0].body);
           } else {
             // Cache Client but no entry
