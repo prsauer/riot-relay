@@ -7,7 +7,7 @@ const express = require('express');
 const path = require('path');
 
 const PORT = process.env.PORT || 5000;
-const RIOT_API_KEY = process.env.RIOT_API_KEY;
+const WOW_ACCESS_TOKEN = process.env.WOW_ACCESS_TOKEN;
 
 var app = express();
 var redisCache;
@@ -20,9 +20,9 @@ if (REDIS_URL) {
 
 app.use('/',
   function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header("Access-Control-Allow-Origin", req.header('Origin'));
     res.header("Access-Control-Allow-Headers", "X-Riot-Token, Origin, X-Requested-With, Content-Type, Accept");
-    req.headers["X-Riot-Token"] = RIOT_API_KEY;
+    req.url += `&access_token=${WOW_ACCESS_TOKEN}`;
     if (req.method === 'OPTIONS') {
       res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
       res.send( 200 );
@@ -46,7 +46,7 @@ app.use('/',
       }
     }
   },
-  proxy('https://na1.api.riotgames.com', {
+  proxy('https://us.api.blizzard.com', {
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
       if (proxyRes.statusCode == 200 && redisCache) {
         redisCache.add(userReq.originalUrl, proxyResData.toString('utf8'), {
