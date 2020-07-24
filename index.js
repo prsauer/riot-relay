@@ -14,6 +14,8 @@ var redisCache;
 
 var REDIS_URL = process.env.REDIS_URL;
 
+console.log(`Proxying ${'https://us.api.blizzard.com'}`);
+
 if (REDIS_URL) {
   redisCache = cache({ client: redis.createClient(REDIS_URL) });
 }
@@ -21,7 +23,7 @@ if (REDIS_URL) {
 app.use('/',
   function(req, res, next) {
     res.header("Access-Control-Allow-Origin", req.header('Origin'));
-    res.header("Access-Control-Allow-Headers", "X-Riot-Token, Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     req.url += `&access_token=${WOW_ACCESS_TOKEN}`;
     if (req.method === 'OPTIONS') {
       res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
