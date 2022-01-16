@@ -7,8 +7,6 @@ var cache = require('express-redis-cache');
 var redis = require('redis');
 
 const express = require('express');
-const path = require('path');
-const { del } = require('request');
 
 const PORT = process.env.PORT || 5000;
 const HSR_COOKIE = process.env.HSR_COOKIE;
