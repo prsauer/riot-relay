@@ -67,6 +67,7 @@ app.use('/',
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
       console.log(userReq.url);
       if (proxyRes.statusCode == 200 && redisCache) {
+        console.log("Writing", proxyResData);
         redisCache.add(userReq.originalUrl, JSON.stringify(proxyResData), {
             type: proxyRes.headers['content-type'],
             status: proxyRes.statusCode,
