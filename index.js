@@ -37,7 +37,7 @@ app.use('/',
       if (redisCache) {
         console.log("Cache.GET", req.originalUrl);
         var cached = redisCache.get(req.originalUrl, function (error, entries) {
-          console.log("Cache.HIT", entries);
+          console.log("Cache.HIT", entries.length);
           if ( entries.length &&  entries[0].body != null ) {
             res.contentType(entries[0].type);
             res.status(200);

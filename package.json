@@ -4,6 +4,7 @@
   "description": "A sample Node.js app using Express 4",
   "main": "index.js",
   "scripts": {
+    "deploy": "git push heroku hsr:master --force",
     "start": "node index.js",
     "test": "node test.js"
   },
