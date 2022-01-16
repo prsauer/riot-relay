@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deploy": "git push heroku hsr:master --force",
+    "redis": "heroku redis:cli -a pacific-plains-61739 --confirm pacific-plains-61739",
     "start": "node index.js",
     "test": "node test.js"
   },
