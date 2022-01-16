@@ -66,9 +66,10 @@ app.use('/',
     },
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
       console.log(userReq.url);
+      console.log('res header', proxyRes.headers);
       if (proxyRes.statusCode == 200 && redisCache) {
-        console.log("Writing", proxyResData.toString());
-        redisCache.add(userReq.originalUrl, proxyResData.toString(), {
+        console.log("Writing", proxyResData.toString('utf-8'));
+        redisCache.add(userReq.originalUrl, proxyResData.toString('utf-8'), {
             type: proxyRes.headers['content-type'],
             status: proxyRes.statusCode,
           },
