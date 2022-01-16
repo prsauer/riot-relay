@@ -61,6 +61,7 @@ app.use('/',
       proxyReqOpts.headers['cookie'] = HSR_COOKIE;
       // console.log('reqCookie', proxyReqOpts.headers['cookie']);
       proxyReqOpts.headers['content-type'] = 'application/json';
+      proxyReqOpts.headers['accept-encoding'] = 'gzip'; // default encoding at hsr is br which causes issues inside express
       console.log(proxyReqOpts.headers);
       return proxyReqOpts;
     },
