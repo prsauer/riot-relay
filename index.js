@@ -67,11 +67,11 @@ app.use('/',
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
       console.log(userReq.url);
       if (proxyRes.statusCode == 200 && redisCache) {
-        redisCache.add(userReq.originalUrl, proxyResData.toString('utf8'), {
+        redisCache.add(userReq.originalUrl, JSON.stringify(proxyResData), {
             type: proxyRes.headers['content-type'],
             status: proxyRes.statusCode,
           },
-          function (error, added) { console.log("Cache.WRITE", added); }
+          function (error, added) { console.log("Cache.WRITE", added, error); }
         );
       }
       return proxyResData;
