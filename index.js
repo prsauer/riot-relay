@@ -17,7 +17,8 @@ var redisCache;
 var REDIS_URL = process.env.REDIS_URL;
 
 if (REDIS_URL) {
-  redisCache = cache({ client: redis.createClient(REDIS_URL) });
+  const expire = 60 * 60; // seconds until cache item expires
+  redisCache = cache({ client: redis.createClient(REDIS_URL), expire });
 }
 
 console.log('HSR', HSR_COOKIE);
