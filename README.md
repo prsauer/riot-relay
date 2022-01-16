@@ -11,7 +11,7 @@ Make sure you have [Node.js](http://nodejs.org/) and the [Heroku CLI](https://cl
 ```sh
 $ git clone https://github.com/prsauer/riot-relay.git # or clone your own fork
 $ cd node-js-getting-started
-$ export RIOT_API_KEY='<your riot key>'
+$ export HSR_COOKIE='<your hsr cookie>'
 $ npm install
 $ npm start
 ```
@@ -23,7 +23,7 @@ Your app should now be running on [localhost:5000](http://localhost:5000/).
 ```
 $ heroku create
 $ git push heroku master
-$ Add RIOT_API_KEY as an config var with your Riot API key as the value 
+$ Add HSR_COOKIE as an config var with your HSR API key as the value 
 $ heroku open
 ```
 

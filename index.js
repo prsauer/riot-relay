@@ -1,3 +1,6 @@
+const dotenv = require('dotenv')
+dotenv.config()
+
 var proxy = require('express-http-proxy');
 
 var cache = require('express-redis-cache');
@@ -5,9 +8,10 @@ var redis = require('redis');
 
 const express = require('express');
 const path = require('path');
+const { del } = require('request');
 
 const PORT = process.env.PORT || 5000;
-const RIOT_API_KEY = process.env.RIOT_API_KEY;
+const HSR_COOKIE = process.env.HSR_COOKIE;
 
 var app = express();
 var redisCache;
@@ -18,11 +22,15 @@ if (REDIS_URL) {
   redisCache = cache({ client: redis.createClient(REDIS_URL) });
 }
 
+console.log('HSR', HSR_COOKIE);
+
 app.use('/',
   function(req, res, next) {
     res.header("Access-Control-Allow-Origin", req.headers.origin);
     res.header("Access-Control-Allow-Headers", "X-Riot-Token, Origin, X-Requested-With, Content-Type, Accept");
-    req.headers["X-Riot-Token"] = RIOT_API_KEY;
+    // req.header('HSR_COOKIE', HSR_COOKIE);
+    req.header('cookie', HSR_COOKIE);
+    req.header("Content-Type", "application/json");
     if (req.method === 'OPTIONS') {
       res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
       res.send( 200 );
@@ -46,8 +54,19 @@ app.use('/',
       }
     }
   },
-  proxy('https://na1.api.riotgames.com', {
+  proxy('hsreplay.net', {
+    https: true,
+    proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+      console.log(proxyReqOpts.hostname, proxyReqOpts.url);
+      console.log(srcReq.hostname, srcReq.url);
+      proxyReqOpts.headers['cookie'] = HSR_COOKIE;
+      // console.log('reqCookie', proxyReqOpts.headers['cookie']);
+      proxyReqOpts.headers['content-type'] = 'application/json';
+      console.log(proxyReqOpts.headers);
+      return proxyReqOpts;
+    },
     userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+      console.log(userReq.url);
       if (proxyRes.statusCode == 200 && redisCache) {
         redisCache.add(userReq.originalUrl, proxyResData.toString('utf8'), {
             type: proxyRes.headers['content-type'],
