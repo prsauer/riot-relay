@@ -35,9 +35,9 @@ app.use(
       res.send(200);
     } else {
       if (redisCache) {
-        console.log("Cache.GET", req.originalUrl);
+        // console.log("Cache.GET", req.originalUrl);
         var cached = redisCache.get(req.originalUrl, function (error, entries) {
-          console.log("Cache.HIT", entries);
+          // console.log("Cache.HIT", entries);
           if (entries.length && entries[0].body != null) {
             res.contentType(entries[0].type);
             res.status(200);
@@ -64,7 +64,7 @@ app.use(
             status: proxyRes.statusCode,
           },
           function (error, added) {
-            console.log("Cache.WRITE", added);
+            // console.log("Cache.WRITE", added);
           }
         );
       }
