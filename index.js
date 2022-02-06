@@ -73,9 +73,9 @@ app.use(
     },
     userResHeaderDecorator(headers, userReq, userRes, proxyReq, proxyRes) {
       // recieves an Object of headers, returns an Object of headers.
-      if (proxyRes.statusCode === 200) {
-        headers["cache-control"] = "public, max-age=3000";
-      }
+      // if (proxyRes.statusCode === 200) {
+      headers["cache-control"] = "public, max-age=3000";
+      // }
       return headers;
     },
   })
