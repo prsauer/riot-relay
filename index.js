@@ -57,6 +57,7 @@ app.use(
   proxy("https://us.api.blizzard.com", {
     userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
       if (proxyRes.statusCode == 200 && redisCache) {
+        userRes.set("Cache-control", "public, max-age=3000");
         redisCache.add(
           userReq.originalUrl,
           proxyResData.toString("utf8"),
