@@ -39,6 +39,7 @@ app.use(
         var cached = redisCache.get(req.originalUrl, function (error, entries) {
           // console.log("Cache.HIT", entries);
           if (entries.length && entries[0].body != null) {
+            res.header("Cache-control", "public, max-age=3000");
             res.contentType(entries[0].type);
             res.status(200);
             res.send(entries[0].body);
