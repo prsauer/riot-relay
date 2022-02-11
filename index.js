@@ -2,7 +2,7 @@ var proxy = require("express-http-proxy");
 
 var cache = require("express-redis-cache");
 var redis = require("redis");
-
+var fetch = require("node-fetch");
 const express = require("express");
 
 const PORT = process.env.PORT || 5000;
