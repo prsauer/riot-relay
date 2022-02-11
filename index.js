@@ -4,10 +4,8 @@ var cache = require("express-redis-cache");
 var redis = require("redis");
 
 const express = require("express");
-const path = require("path");
 
 const PORT = process.env.PORT || 5000;
-const WOW_ACCESS_TOKEN = process.env.WOW_ACCESS_TOKEN;
 
 var app = express();
 
@@ -21,6 +19,36 @@ if (REDIS_URL) {
   redisCache = cache({ client: redis.createClient(REDIS_URL) });
 }
 
+var CLIENT_ID = process.env.CLIENT_ID;
+var CLIENT_SECRET = process.env.CLIENT_SECRET;
+
+const keyCache = {
+  expires_in: "",
+  access_token: "",
+  sub: "",
+  token_type: "",
+  cached_on: "",
+};
+
+function resolveApiKey(region, clientId, clientSecret) {
+  const expired = cachedOn + parseInt(keyCache.expires_in);
+  console.log("expiry", expired, cachedOn, keyCache.expires_in);
+  if (!keyCache.access_token || expired) {
+    return fetch(
+      `https://${region}.battle.net/oauth/token?grant_type=client_credentials`,
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Basic " +
+            Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+        },
+      }
+    ).then((r) => ({ ...r.json(), cachedOn: new Date().getTime() }));
+  }
+  return new Promise((resolve) => resolve(keyCache));
+}
+
 app.use(
   "/",
   function (req, res, next) {
@@ -29,31 +57,38 @@ app.use(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
-    req.url += `&access_token=${WOW_ACCESS_TOKEN}`;
-    if (req.method === "OPTIONS") {
-      res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      res.send(200);
-    } else {
-      if (redisCache) {
-        // console.log("Cache.GET", req.originalUrl);
-        var cached = redisCache.get(req.originalUrl, function (error, entries) {
-          // console.log("Cache.HIT", entries);
-          if (entries.length && entries[0].body != null) {
-            res.header("Cache-control", "public, max-age=3000");
-            res.contentType(entries[0].type);
-            res.status(200);
-            res.send(entries[0].body);
+    const token = resolveApiKey("us", CLIENT_ID, CLIENT_SECRET)
+      .then(() => {
+        req.url += `&access_token=${token.access_token}`;
+        console.log("API Key Resolved", token);
+        if (req.method === "OPTIONS") {
+          res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+          res.send(200);
+        } else {
+          if (redisCache) {
+            // console.log("Cache.GET", req.originalUrl);
+            redisCache.get(req.originalUrl, function (error, entries) {
+              // console.log("Cache.HIT", entries);
+              if (entries.length && entries[0].body != null) {
+                res.header("Cache-control", "public, max-age=3000");
+                res.contentType(entries[0].type);
+                res.status(200);
+                res.send(entries[0].body);
+              } else {
+                // Cache Client but no entry
+                next();
+              }
+            });
           } else {
-            // Cache Client but no entry
-
+            // No Cache Client
             next();
           }
-        });
-      } else {
-        // No Cache Client
+        }
+      })
+      .catch(() => {
+        console.log("API Key Refresh Failed");
         next();
-      }
-    }
+      });
   },
   proxy("https://us.api.blizzard.com", {
     userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
