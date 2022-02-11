@@ -31,7 +31,7 @@ const keyCache = {
 };
 
 function resolveApiKey(region, clientId, clientSecret) {
-  const expired = cachedOn + parseInt(keyCache.expires_in);
+  const expired = keyCache.cached_on + parseInt(keyCache.expires_in);
   console.log("expiry", expired, cachedOn, keyCache.expires_in);
   if (!keyCache.access_token || expired) {
     return fetch(
@@ -44,7 +44,7 @@ function resolveApiKey(region, clientId, clientSecret) {
             Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
         },
       }
-    ).then((r) => ({ ...r.json(), cachedOn: new Date().getTime() }));
+    ).then((r) => ({ ...r.json(), cached_on: new Date().getTime() }));
   }
   return new Promise((resolve) => resolve(keyCache));
 }
