@@ -32,7 +32,7 @@ const keyCache = {
 
 function resolveApiKey(region, clientId, clientSecret) {
   const expired = keyCache.cached_on + parseInt(keyCache.expires_in);
-  console.log("expiry", expired, cachedOn, keyCache.expires_in);
+  console.log("expiry", expired, keyCache.cached_on, keyCache.expires_in);
   if (!keyCache.access_token || expired) {
     return fetch(
       `https://${region}.battle.net/oauth/token?grant_type=client_credentials`,
