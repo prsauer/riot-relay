@@ -57,8 +57,8 @@ app.use(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
-    const token = resolveApiKey("us", CLIENT_ID, CLIENT_SECRET)
-      .then(() => {
+    resolveApiKey("us", CLIENT_ID, CLIENT_SECRET)
+      .then((token) => {
         req.url += `&access_token=${token.access_token}`;
         console.log("API Key Resolved", token);
         if (req.method === "OPTIONS") {
