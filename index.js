@@ -23,17 +23,19 @@ var CLIENT_ID = process.env.CLIENT_ID;
 var CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const keyCache = {
-  expires_in: "",
+  expires_in: 0,
   access_token: "",
   sub: "",
   token_type: "",
-  cached_on: "",
+  cached_on: 0,
 };
 
 function resolveApiKey(region, clientId, clientSecret) {
-  const expired = keyCache.cached_on + parseInt(keyCache.expires_in);
-  console.log("expiry", expired, keyCache.cached_on, keyCache.expires_in);
-  if (!keyCache.access_token || expired) {
+  const now = new Date().getTime();
+  const expiresTime =
+    keyCache.cached_on + keyCache.expires_in * 1000 - 1000 * 60 * 60 * 4;
+  console.log("expiry", now, expiresTime);
+  if (!keyCache.access_token || now > expiresTime) {
     return fetch(
       `https://${region}.battle.net/oauth/token?grant_type=client_credentials`,
       {
@@ -47,7 +49,6 @@ function resolveApiKey(region, clientId, clientSecret) {
     )
       .then((r) => r.json())
       .then((j) => ({ ...j, cached_on: new Date().getTime() }));
-    // ).then((r) => ({ ...r.json(), cached_on: new Date().getTime() }));
   }
   return new Promise((resolve) => resolve(keyCache));
 }
