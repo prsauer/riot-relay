@@ -44,7 +44,10 @@ function resolveApiKey(region, clientId, clientSecret) {
             Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
         },
       }
-    ).then((r) => ({ ...r.json(), cached_on: new Date().getTime() }));
+    )
+      .then((r) => r.json())
+      .then((j) => ({ ...j, cached_on: new Date().getTime() }));
+    // ).then((r) => ({ ...r.json(), cached_on: new Date().getTime() }));
   }
   return new Promise((resolve) => resolve(keyCache));
 }
